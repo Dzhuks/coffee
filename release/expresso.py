@@ -2,7 +2,7 @@ import sqlite3
 import sys
 
 from main import Ui_MainWindow
-from addEditCoffeeForm import Ui_Dialog
+from release.addEditCoffeeForm import Ui_Dialog
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QMessageBox
 
