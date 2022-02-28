@@ -28,13 +28,6 @@
       <widget class="QTableWidget" name="tableWidget"/>
      </item>
      <item>
-      <widget class="QPushButton" name="load">
-       <property name="text">
-        <string>Show</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="add">
        <property name="text">
         <string>Add</string>

@@ -28,9 +28,6 @@ class Ui_MainWindow(object):
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         self.verticalLayout.addWidget(self.tableWidget)
-        self.load = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.load.setObjectName("load")
-        self.verticalLayout.addWidget(self.load)
         self.add = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.add.setObjectName("add")
         self.verticalLayout.addWidget(self.add)
@@ -49,5 +46,4 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.load.setText(_translate("MainWindow", "Show"))
         self.add.setText(_translate("MainWindow", "Add"))

@@ -2,8 +2,26 @@ import sqlite3
 import sys
 
 from main import Ui_MainWindow
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QTableWidget
+from addEditCoffeeForm import Ui_Dialog
+from PyQt5.QtWidgets import QApplication, QDialog
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+
+
+class Dialog(QDialog, Ui_Dialog):
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
+        self.setupUi(self)
+
+        self.ok = False
+
+        self.buttonBox.accepted.connect(lambda: self.change(True))
+
+        # adding action when form is rejected
+        self.buttonBox.rejected.connect(lambda: self.change(False))
+
+    def change(self, arg):
+        self.ok = arg
+        self.close()
 
 
 class MyWidget(QMainWindow, Ui_MainWindow):
@@ -11,11 +29,11 @@ class MyWidget(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.con = sqlite3.connect("coffee.db")
-        self.load.clicked.connect(self.load_table)
+        self.titles = []
+        self.load_table()
         self.tableWidget.itemChanged.connect(self.item_changed)
-        self.add.clicked.connect(self.save_results)
+        self.add.clicked.connect(self.dialog)
         self.modified = {}
-        self.titles = None
 
     def load_table(self):
         cur = self.con.cursor()
@@ -40,7 +58,13 @@ class MyWidget(QMainWindow, Ui_MainWindow):
             for j, val in enumerate(elem):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
         self.modified = {}
-        self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
+
+    def dialog(self):
+        dialog = Dialog()
+        dialog.exec_()
+        if dialog.ok:
+            self.add_item([dialog.lineEdit.text(), dialog.lineEdit_2.text(), dialog.lineEdit_3.text(),
+                           dialog.textEdit.toPlainText(), dialog.lineEdit_4.text(), dialog.lineEdit_5.text()])
 
     def item_changed(self, item):
         # Если значение в ячейке было изменено,
@@ -58,6 +82,16 @@ class MyWidget(QMainWindow, Ui_MainWindow):
             cur.execute(que, (self.spinBox.text(),))
             self.con.commit()
             self.modified.clear()
+
+    def add_item(self, *args):
+        cur = self.con.cursor()
+        values = map(lambda x: f"'{x}'", args[0])
+        columns = map(lambda x: f"'{x}'", self.titles[1:])
+        que = f"INSERT INTO coffees({', '.join(columns)}) Values({', '.join(values)})"
+        print(que)
+        cur.execute(que)
+        self.con.commit()
+        self.load_table()
 
 
 if __name__ == '__main__':
