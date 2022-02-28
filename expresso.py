@@ -7,6 +7,9 @@ from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 
 
+DATABASE = "data/coffee.db"
+
+
 class Dialog(QDialog, Ui_Dialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
@@ -28,7 +31,7 @@ class MyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.con = sqlite3.connect("coffee.db")
+        self.con = sqlite3.connect(DA)
         self.titles = []
         self.load_table()
         self.tableWidget.itemChanged.connect(self.item_changed)
