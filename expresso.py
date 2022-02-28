@@ -4,7 +4,7 @@ import sys
 from main import Ui_MainWindow
 from addEditCoffeeForm import Ui_Dialog
 from PyQt5.QtWidgets import QApplication, QDialog
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QMessageBox
 
 
 DATABASE = "data/coffee.db"
@@ -31,7 +31,7 @@ class MyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.con = sqlite3.connect(DA)
+        self.con = sqlite3.connect(DATABASE)
         self.titles = []
         self.load_table()
         self.tableWidget.itemChanged.connect(self.item_changed)
@@ -81,7 +81,6 @@ class MyWidget(QMainWindow, Ui_MainWindow):
             que += ", ".join([f"{key}='{self.modified.get(key)}'"
                               for key in self.modified.keys()])
             que += "WHERE id = ?"
-            print(que)
             cur.execute(que, (self.spinBox.text(),))
             self.con.commit()
             self.modified.clear()
@@ -91,9 +90,16 @@ class MyWidget(QMainWindow, Ui_MainWindow):
         values = map(lambda x: f"'{x}'", args[0])
         columns = map(lambda x: f"'{x}'", self.titles[1:])
         que = f"INSERT INTO coffees({', '.join(columns)}) Values({', '.join(values)})"
-        print(que)
-        cur.execute(que)
-        self.con.commit()
+        try:
+            cur.execute(que)
+            self.con.commit()
+        except sqlite3.OperationalError:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Критическая ошибка")
+            msg.setInformativeText('Недопустимые данные')
+            msg.setWindowTitle("Ошибка")
+            msg.exec_()
         self.load_table()
 
 
